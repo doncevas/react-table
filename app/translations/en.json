@@ -1,1 +1,4 @@
-[]
+{
+  "app.containers.NotFoundPage.header": "This is the NotFoundPage container!",
+  "app.containers.Products.header": "This is the Products container!"
+}
