@@ -5,19 +5,20 @@
  */
 
 import React, { useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
+// import { FormattedMessage } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import { useInjectReducer, useInjectSaga } from 'redux-injectors';
 
 import makeSelectPreview from './selectors';
+import { setPriceAction, setQuantityAction } from './actions';
 import reducer from './reducer';
 import saga from './saga';
-import messages from './messages';
+// import messages from './messages';
 import TabsPanel from 'components/TabsPanel';
-import ListTable from 'components/ListTable';
-import { Product } from 'containers/Products/product.interface';
+// import ListTable from 'components/ListTable';
+// import { Product } from 'containers/Products/product.interface';
 import Products from 'containers/Products';
 import { debounce } from 'lodash';
 
@@ -38,16 +39,14 @@ function Preview(props: Props) {
 
   const quantityChangeHandler = useCallback(
     debounce((changes: number, id: string) => {
-      console.log(changes);
-      console.log(id);
+      dispatch(setQuantityAction({ id: id, quantity: changes }));
     }, 1000),
     [],
   );
 
   const priceChangeHandler = useCallback(
     debounce((changes: number, id: string) => {
-      console.log(changes);
-      console.log(id);
+      dispatch(setPriceAction({ id: id, price: changes }));
     }, 1000),
     [],
   );
@@ -67,6 +66,7 @@ function Preview(props: Props) {
                     field: 'quantity',
                     render: rowData => (
                       <input
+                        id={`${rowData.id}_quantity`}
                         type="number"
                         onChange={e =>
                           quantityChangeHandler(
@@ -74,7 +74,7 @@ function Preview(props: Props) {
                             rowData.id,
                           )
                         }
-                        value={rowData.quantity}
+                        defaultValue={rowData.quantity}
                       />
                     ),
                   },
@@ -83,11 +83,12 @@ function Preview(props: Props) {
                     field: 'price',
                     render: rowData => (
                       <input
+                        id={`${rowData.id}_price`}
                         type="number"
                         onChange={e =>
                           priceChangeHandler(Number(e.target.value), rowData.id)
                         }
-                        value={rowData.price}
+                        defaultValue={rowData.price}
                       />
                     ),
                   },

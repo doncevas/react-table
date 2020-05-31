@@ -10,7 +10,8 @@ export enum ErrorTypes {
 
 export enum DataType {
   PRODUCTS = 'products',
-  IDS = 'ids',
+  QUANTITY_HISTORY = 'quantityHistory',
+  PRICE_HISTORY = 'priceHistory',
 }
 
 export enum FormFieldType {

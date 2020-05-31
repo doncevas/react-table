@@ -22,14 +22,14 @@ export const getAll = <T>(type: DataType): T[] => {
 
 export const getById = <T>(id: string, type: DataType): T => {
   const localStorageData = localStorage.getItem(type);
+
   if (!localStorageData) {
     return {} as T;
   }
 
   const allData = JSON.parse(localStorageData);
-  const currentObject: T = allData
-    .find(item => item.id === id)
-    .filter(val => val);
+  const currentObject: T = allData.find(item => item.id === id);
+
   return currentObject || ({} as T);
 };
 
