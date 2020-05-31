@@ -31,7 +31,12 @@ const stateSelector = createStructuredSelector({
   isLoading: selectIsLoadingProducts(),
 });
 
-function Products(props: { history: any; intl: { formatMessage: Function } }) {
+function Products(props: {
+  history: any;
+  intl: { formatMessage: Function };
+  disableActions?: boolean;
+  extraColumns?: any[] | null;
+}) {
   useInjectReducer({ key: 'products', reducer: reducer });
   useInjectSaga({ key: 'products', saga: saga });
   const dispatch = useDispatch();
@@ -87,15 +92,18 @@ function Products(props: { history: any; intl: { formatMessage: Function } }) {
 
   return (
     <div>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={createNewOpenForm}
-        style={{ margin: 10 }}
-      >
-        <FormattedMessage {...messages.addButtonTitle} />
-      </Button>
+      {!props.disableActions && (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={createNewOpenForm}
+          style={{ margin: 10 }}
+        >
+          <FormattedMessage {...messages.addButtonTitle} />
+        </Button>
+      )}
       <ListTable<Product>
+        disableActions={props.disableActions}
         data={tableData}
         columns={[
           {
@@ -141,6 +149,7 @@ function Products(props: { history: any; intl: { formatMessage: Function } }) {
               />
             ),
           },
+          ...(props.extraColumns ? props.extraColumns : []),
         ]}
         title={props.intl.formatMessage(messages.tableTitle)}
         isLoading={isLoading}

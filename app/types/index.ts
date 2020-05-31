@@ -5,6 +5,8 @@ import { SagaInjectionModes } from 'redux-injectors';
 
 import { ContainerState as LanguageProviderState } from 'containers/LanguageProvider/types';
 import { ContainerState as ProductsState } from 'containers/Products/types';
+import { ContainerState as LayoutState } from 'containers/Layout/types';
+import { ContainerState as PreviewState } from 'containers/Preview/types';
 // [IMPORT NEW CONTAINERSTATE ABOVE] < Needed for generating containers seamlessly
 
 export interface InjectedStore extends Store {
@@ -29,6 +31,8 @@ export interface ApplicationRootState {
   readonly router: RouterState;
   readonly language: LanguageProviderState;
   readonly products: ProductsState;
+  readonly layout: LayoutState;
+  readonly preview: PreviewState;
   // [INSERT NEW REDUCER KEY ABOVE] < Needed for generating containers seamlessly
 
   // for testing purposes
