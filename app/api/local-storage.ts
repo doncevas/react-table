@@ -5,7 +5,7 @@ function makeId(): string {
   const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const charactersLength = characters.length;
-  for (let i = 0; i < 12; i += 1) {
+  for (let i = 0; i < 24; i += 1) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
@@ -59,6 +59,23 @@ export const removeById = (id: string, type: DataType): boolean => {
   const newObject = allData.filter(item => item.id !== id);
 
   localStorage.setItem(type, JSON.stringify(newObject));
+  return true;
+};
+
+export const update = <T extends { id: string }>(
+  data: T,
+  type: DataType,
+): boolean => {
+  const localStorageData = localStorage.getItem(type);
+  if (!localStorageData) {
+    return false;
+  }
+
+  const allData = JSON.parse(localStorageData);
+  const newList = allData.filter(item => item.id !== data.id);
+  newList.push(data);
+
+  localStorage.setItem(type, JSON.stringify(newList));
   return true;
 };
 

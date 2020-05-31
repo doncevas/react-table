@@ -6,6 +6,7 @@ import { Product } from './product.interface';
 interface ProductsState {
   products: Product[];
   isLoading: boolean;
+  error: Error | null;
 }
 
 /* --- ACTIONS --- */

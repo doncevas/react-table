@@ -4,6 +4,7 @@ import { TextField, InputAdornment } from '@material-ui/core';
 import { Controller, useFormContext } from 'react-hook-form';
 import { FormFieldOptions } from '../form.interface';
 import { ErrorTypes } from 'utils/global.interface';
+import { getValidators, getErrorMessage } from 'utils/helper/error-handler';
 
 const useStyles = makeStyles(theme => ({
   input: {
@@ -18,17 +19,19 @@ function Text({
   props,
   error,
   inputType = 'text',
+  initValue,
 }: {
   props: FormFieldOptions;
   error: ErrorTypes;
   inputType?: string;
+  initValue?: string | number | boolean;
 }) {
   const classes = useStyles();
   const { control } = useFormContext();
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    // setErrorMessage(getErrorMessage(props.options.validations, error));
+    setErrorMessage(getErrorMessage(props.options.validations, error));
   }, [error]);
 
   return (
@@ -40,7 +43,7 @@ function Text({
           label={props.title}
           type={inputType}
           placeholder={props.placeholder}
-          // helperText={errorMessage}
+          helperText={errorMessage}
           fullWidth
           margin="normal"
           InputLabelProps={{
@@ -56,10 +59,10 @@ function Text({
           variant="outlined"
         />
       }
-      // rules={getValidators(props.options.validations)}
+      rules={getValidators(props.options.validations)}
       name={props.field}
       control={control}
-      defaultValue=""
+      defaultValue={initValue}
     />
   );
 }

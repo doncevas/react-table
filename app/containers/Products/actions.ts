@@ -15,6 +15,13 @@ export const createProductActionSuccess = () =>
 export const createProductActionFailed = (error: Error) =>
   action(ActionTypes.CREATE_PRODUCT_ACTION_FAILED, error);
 
+export const updateProductAction = (payload: Product) =>
+  action(ActionTypes.UPDATE_PRODUCT_ACTION, payload);
+export const updateProductActionSuccess = () =>
+  action(ActionTypes.UPDATE_PRODUCT_ACTION_SUCCESS);
+export const updateProductActionFailed = (error: Error) =>
+  action(ActionTypes.UPDATE_PRODUCT_ACTION_FAILED, error);
+
 export const getProductsAction = () => action(ActionTypes.GET_PRODUCTS_ACTION);
 export const getProductsActionSuccess = (payload: Product[]) =>
   action(ActionTypes.GET_PRODUCTS_ACTION_SUCCESS, payload);

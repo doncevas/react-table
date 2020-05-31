@@ -74,6 +74,7 @@
     "intl": "1.2.5",
     "lodash": "4.17.15",
     "material-table": "1.58.2",
+    "material-ui-color-picker": "3.5.0",
     "offline-plugin": "5.0.7",
     "react": "16.13.0",
     "react-app-polyfill": "1.0.6",

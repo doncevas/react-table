@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { useInjectReducer, useInjectSaga } from 'redux-injectors';
 import Form from 'components/Form';
-import { Button } from '@material-ui/core';
+import { Button, Checkbox } from '@material-ui/core';
 
 import { selectIsLoadingProducts, selectProducts } from './selectors';
 import reducer from './reducer';
@@ -20,35 +20,69 @@ import ListTable from 'components/ListTable';
 import {
   getProductsAction,
   createProductAction,
+  updateProductAction,
   removeProductAction,
 } from './actions';
 import { Product, ProductFields } from './product.interface';
-import { ProductTableFields, ProductFormFields } from './product.config';
+import { GetProductFormField } from './product.config';
 
 const stateSelector = createStructuredSelector({
   products: selectProducts(),
   isLoading: selectIsLoadingProducts(),
 });
 
-function Products(props: { intl: { formatMessage: Function } }) {
+function Products(props: { history: any; intl: { formatMessage: Function } }) {
   useInjectReducer({ key: 'products', reducer: reducer });
   useInjectSaga({ key: 'products', saga: saga });
   const dispatch = useDispatch();
 
   const { products, isLoading } = useSelector(stateSelector);
-  const [isOpenAddForm, setAddFormState] = useState(false);
+  const [isOpenForm, setFormState] = useState(false);
+  const [editData, setEditData] = useState<Product>();
+  const [tableData, setTableData] = useState<Product[]>();
 
   useEffect(() => {
     dispatch(getProductsAction());
   }, [dispatch]);
 
-  const addProduct = (payload: Product) => {
-    dispatch(createProductAction(payload));
-    setAddFormState(false);
+  useEffect(() => {
+    setTableData(products);
+  }, [products]);
+
+  const addOrEditProduct = (data: Product) => {
+    if (editData && editData.id) {
+      dispatch(updateProductAction({ ...editData, ...data }));
+    } else {
+      dispatch(createProductAction(data));
+    }
+    setFormState(false);
   };
 
   const removeProduct = (id: string) => {
     dispatch(removeProductAction(id));
+  };
+
+  const editProduct = (data: Product) => {
+    setEditData(data);
+    setFormState(true);
+  };
+
+  const openProduct = (id: string) => {
+    props.history.push(`/product/${id}`);
+  };
+
+  const closeForm = () => {
+    setEditData({} as Product);
+    setFormState(false);
+  };
+
+  const createNewOpenForm = () => {
+    setEditData({} as Product);
+    setFormState(true);
+  };
+
+  const handleChange = (event, object: Product) => {
+    dispatch(updateProductAction({ ...object, active: event.target.checked }));
   };
 
   return (
@@ -56,25 +90,75 @@ function Products(props: { intl: { formatMessage: Function } }) {
       <Button
         variant="contained"
         color="primary"
-        onClick={() => setAddFormState(true)}
+        onClick={createNewOpenForm}
         style={{ margin: 10 }}
       >
         <FormattedMessage {...messages.addButtonTitle} />
       </Button>
       <ListTable<Product>
-        data={products}
-        columns={ProductTableFields}
+        data={tableData}
+        columns={[
+          {
+            title: props.intl.formatMessage(messages.productColor),
+            field: 'color',
+            render: rowData => (
+              <div
+                style={{
+                  width: 50,
+                  height: 20,
+                  backgroundColor: rowData.color,
+                }}
+              ></div>
+            ),
+          },
+          {
+            title: props.intl.formatMessage(messages.productName),
+            field: 'name',
+            defaultSort: 'asc',
+          },
+          {
+            title: props.intl.formatMessage(messages.productEan),
+            field: 'ean',
+          },
+          {
+            title: props.intl.formatMessage(messages.productType),
+            field: 'type',
+          },
+          {
+            title: props.intl.formatMessage(messages.productWeight),
+            field: 'weight',
+          },
+          {
+            title: props.intl.formatMessage(messages.productActive),
+            field: 'active',
+            render: rowData => (
+              <Checkbox
+                id={rowData.id}
+                checked={rowData.active}
+                onChange={e => handleChange(e, rowData)}
+                disableRipple
+                color="primary"
+              />
+            ),
+          },
+        ]}
         title={props.intl.formatMessage(messages.tableTitle)}
         isLoading={isLoading}
-        onAddFormOpen={setAddFormState}
         onRemoveElement={removeProduct}
+        onOpenElement={openProduct}
+        onEditElement={editProduct}
       />
       <Form<Product, ProductFields>
-        formTitle={props.intl.formatMessage(messages.createFormTitle)}
-        onCloseForm={setAddFormState}
-        onSubmitted={addProduct}
-        fields={ProductFormFields}
-        isOpen={isOpenAddForm}
+        initData={editData}
+        formTitle={
+          editData && editData.id
+            ? props.intl.formatMessage(messages.tableTitleEdit)
+            : props.intl.formatMessage(messages.createFormTitle)
+        }
+        onCloseForm={closeForm}
+        onSubmitted={addOrEditProduct}
+        fields={GetProductFormField(props.intl)}
+        isOpen={isOpenForm}
       />
     </div>
   );
