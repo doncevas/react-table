@@ -1,9 +1,12 @@
 import { ActionType } from 'typesafe-actions';
 import * as actions from './actions';
+import { PricePayload, QuantityPayload } from './preview.interface';
 
 /* --- STATE --- */
 interface PreviewState {
-  readonly default: any;
+  quantityHistory: QuantityPayload[];
+  priceHistory: PricePayload[];
+  isLoading: boolean;
 }
 
 /* --- ACTIONS --- */

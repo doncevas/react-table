@@ -4,26 +4,38 @@
  *
  */
 
-import React, { useCallback } from 'react';
-// import { FormattedMessage } from 'react-intl';
+import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import { useInjectReducer, useInjectSaga } from 'redux-injectors';
 
-import makeSelectPreview from './selectors';
-import { setPriceAction, setQuantityAction } from './actions';
+import makeSelectPreview, {
+  selectPriceHistory,
+  selectQuantityHistory,
+} from './selectors';
+import {
+  setPriceAction,
+  setQuantityAction,
+  getPriceAction,
+  getQuantitiesAction,
+} from './actions';
 import reducer from './reducer';
 import saga from './saga';
-// import messages from './messages';
 import TabsPanel from 'components/TabsPanel';
-// import ListTable from 'components/ListTable';
-// import { Product } from 'containers/Products/product.interface';
 import Products from 'containers/Products';
 import { debounce } from 'lodash';
+import { TextField } from '@material-ui/core';
+import HighchartsReact from 'highcharts-react-official';
+import Highcharts from 'highcharts/highstock';
+
+import HC_more from 'highcharts/highcharts-more';
+HC_more(Highcharts);
 
 const stateSelector = createStructuredSelector({
   preview: makeSelectPreview(),
+  priceHistory: selectPriceHistory(),
+  quantityHistory: selectQuantityHistory(),
 });
 
 interface Props {}
@@ -33,9 +45,8 @@ function Preview(props: Props) {
   useInjectReducer({ key: 'preview', reducer: reducer });
   useInjectSaga({ key: 'preview', saga: saga });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { preview } = useSelector(stateSelector);
-  const dispatch = useDispatch(); // eslint-disable-line @typescript-eslint/no-unused-vars
+  const { priceHistory, quantityHistory } = useSelector(stateSelector);
+  const dispatch = useDispatch();
 
   const quantityChangeHandler = useCallback(
     debounce((changes: number, id: string) => {
@@ -51,6 +62,11 @@ function Preview(props: Props) {
     [],
   );
 
+  useEffect(() => {
+    dispatch(getPriceAction());
+    dispatch(getQuantitiesAction());
+  }, [dispatch]);
+
   return (
     <div>
       <TabsPanel
@@ -65,16 +81,18 @@ function Preview(props: Props) {
                     title: 'Quantity',
                     field: 'quantity',
                     render: rowData => (
-                      <input
+                      <TextField
                         id={`${rowData.id}_quantity`}
+                        label="Number"
                         type="number"
-                        onChange={e =>
+                        onBlur={e =>
                           quantityChangeHandler(
                             Number(e.target.value),
                             rowData.id,
                           )
                         }
                         defaultValue={rowData.quantity}
+                        variant="outlined"
                       />
                     ),
                   },
@@ -82,12 +100,17 @@ function Preview(props: Props) {
                     title: 'Price',
                     field: 'price',
                     render: rowData => (
-                      <input
+                      <TextField
                         id={`${rowData.id}_price`}
+                        label="Number"
                         type="number"
-                        onChange={e =>
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        onBlur={e =>
                           priceChangeHandler(Number(e.target.value), rowData.id)
                         }
+                        variant="outlined"
                         defaultValue={rowData.price}
                       />
                     ),
@@ -98,11 +121,43 @@ function Preview(props: Props) {
           },
           {
             label: 'Price history',
-            content: <div>Price history</div>,
+            content: (
+              <div>
+                <HighchartsReact
+                  highcharts={Highcharts}
+                  options={{
+                    title: {
+                      text: 'Price history',
+                    },
+                    series: [
+                      {
+                        data: priceHistory.map(item => item.price),
+                      },
+                    ],
+                  }}
+                />
+              </div>
+            ),
           },
           {
             label: 'Quantity History',
-            content: <div>Quantity Historys</div>,
+            content: (
+              <div>
+                <HighchartsReact
+                  highcharts={Highcharts}
+                  options={{
+                    title: {
+                      text: 'Quantity History',
+                    },
+                    series: [
+                      {
+                        data: quantityHistory.map(item => item.quantity),
+                      },
+                    ],
+                  }}
+                />
+              </div>
+            ),
           },
         ]}
       />

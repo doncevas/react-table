@@ -20,12 +20,13 @@ export const setPrice = async (payload: PricePayload) => {
   update({ ...product, price: payload.price }, DataType.PRODUCTS);
   return create<PricePayload>(DataType.PRICE_HISTORY, {
     ...payload,
+    oldPrice: product.price,
     date: new Date(),
   });
 };
 
 export const getQuantityHistory = () =>
-  getAll<QuantityPayload>(DataType.QUANTITY_HISTORY).slice(1, 5);
+  getAll<QuantityPayload>(DataType.QUANTITY_HISTORY).slice(0, 5);
 
 export const getPriceHistory = () =>
-  getAll<PricePayload>(DataType.PRICE_HISTORY).slice(1, 5);
+  getAll<PricePayload>(DataType.PRICE_HISTORY).slice(0, 5).reverse();

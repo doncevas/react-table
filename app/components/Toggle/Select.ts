@@ -6,6 +6,7 @@ const Select = styled.select`
   border-style: none;
   min-width: 20px;
   margin-left: 10px;
+  color: #333;
 `;
 
 export default Select;

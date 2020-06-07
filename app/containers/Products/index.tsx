@@ -44,7 +44,7 @@ function Products(props: {
   const { products, isLoading } = useSelector(stateSelector);
   const [isOpenForm, setFormState] = useState(false);
   const [editData, setEditData] = useState<Product>();
-  const [tableData, setTableData] = useState<Product[]>();
+  const [tableData, setTableData] = useState<Product[]>([] as Product[]);
 
   useEffect(() => {
     dispatch(getProductsAction());

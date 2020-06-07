@@ -36,14 +36,14 @@ export const getById = <T>(id: string, type: DataType): T => {
 export const create = <T>(type: DataType, payload: T): string | null => {
   const localStorageData = localStorage.getItem(type);
   const newId = makeId();
-  const newProduct = { ...payload, id: newId };
+  const newItem = { ...payload, id: newId };
   if (!localStorageData) {
-    localStorage.setItem(type, JSON.stringify([newProduct]));
+    localStorage.setItem(type, JSON.stringify([newItem]));
     return newId;
   }
 
   const allData = JSON.parse(localStorageData);
-  allData.push(newProduct);
+  allData.unshift(newItem);
   localStorage.setItem(type, JSON.stringify(allData));
 
   return newId;
@@ -73,7 +73,7 @@ export const update = <T extends { id: string }>(
 
   const allData = JSON.parse(localStorageData);
   const newList = allData.filter(item => item.id !== data.id);
-  newList.push(data);
+  newList.unshift(data);
 
   localStorage.setItem(type, JSON.stringify(newList));
   return true;

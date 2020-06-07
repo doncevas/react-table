@@ -9,8 +9,8 @@ export interface Product {
   weight: number;
   color: string;
   active: boolean;
-  price?: string;
-  quantity?: boolean;
+  price: number;
+  quantity: number;
 }
 
 export interface ProductFields {

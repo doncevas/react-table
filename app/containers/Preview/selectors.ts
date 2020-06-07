@@ -7,18 +7,19 @@ import { initialState } from './reducer';
  */
 
 const selectPreviewDomain = (state: ApplicationRootState) =>
-  state || initialState;
+  state.preview || initialState;
 
-/**
- * Other specific selectors
- */
+const selectQuantityHistory = () =>
+  createSelector(
+    selectPreviewDomain,
+    subState => subState.quantityHistory || [],
+  );
 
-/**
- * Default selector used by Preview
- */
+const selectPriceHistory = () =>
+  createSelector(selectPreviewDomain, subState => subState.priceHistory || []);
 
 const makeSelectPreview = () =>
-  createSelector(selectPreviewDomain, substate => substate);
+  createSelector(selectPreviewDomain, subState => subState);
 
 export default makeSelectPreview;
-export { selectPreviewDomain };
+export { selectPreviewDomain, selectQuantityHistory, selectPriceHistory };
